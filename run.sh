@@ -2,5 +2,5 @@
 
 for i in `seq 1 $1`;
 do
-	./rainbow $i &
+	./build_rainbow_table $i > table$i.csv &
 done

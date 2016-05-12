@@ -8,10 +8,11 @@
 #include <time.h>
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
 #include <pthread.h>
 
-#define NUM_OF_CHAINS 10
-#define CHAIN_LENGTH 100
+#define NUM_OF_CHAINS 1024
+#define CHAIN_LENGTH 1024
 using namespace std;
 static const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@";
 
@@ -38,8 +39,7 @@ char* reduce(char *base64, uint8_t* hashed, int round){
 	memset(new_data, '\0', 50);
 	memcpy(new_data, data, 32);
 	int index = 32;
-	while (round > 0)
-	{
+	while (round > 0){
 		int digit = round%10;
 		new_data[index]=digit;
 		round /= 10;
@@ -77,7 +77,9 @@ void build_chain(int chain_length){
 
 
 int main(int argc, char **argv){
-	srand(time(NULL));
+	srand(getpid());
+	int table_number = atoi(argv[1]);
+	printf("%d\n",table_number );
 	int i;
 	for (i = 0; i < NUM_OF_CHAINS; ++i){
 		build_chain(CHAIN_LENGTH);
