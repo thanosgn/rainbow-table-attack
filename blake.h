@@ -102,8 +102,3 @@ static const uint8_t padding[129] =
 };
 
 uint8_t* hash(uint8_t*, char*);
-void print_uint8_t(uint8_t* hash);
-void print_hash(uint8_t*,int);
-char* sprint_hash(uint8_t*);
-void print_array(char *array, long length);
-long hex_to_base64(char *hex, char **base64);
