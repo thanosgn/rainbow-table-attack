@@ -2,8 +2,8 @@
 # In order to execute this "Makefile" just type "make"
 #
 
-OBJS 	= rainbow.o blake256.o
-SOURCE	= rainbow.cpp blake256.cpp
+OBJS 	= rainbow.o blake256.o base64.o
+SOURCE	= rainbow.cpp blake256.cpp base64.cpp
 HEADER  = blake.h
 OUT  	= rainbow
 CC		= g++
@@ -21,6 +21,9 @@ rainbow.o: rainbow.cpp blake.h
 
 blake256.o: blake256.cpp blake.h
 	$(CC) $(FLAGS) blake256.cpp
+
+base64.o: base64.cpp
+	$(CC) $(FLAGS) base64.cpp
 
 # hextobase64.o: hextobase64.cpp
 # 	$(CC) $(FLAGS) hextobase64.cpp
