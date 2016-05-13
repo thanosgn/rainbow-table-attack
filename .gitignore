@@ -28,10 +28,12 @@
 *.app
 rainbow
 
-
 # CSV Files
 *.csv
 
-
 # txt Files
 *.txt
+
+#Executables
+build_rainbow_table
+rainbow_attack
