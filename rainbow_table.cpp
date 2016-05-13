@@ -2,25 +2,6 @@
 using namespace std;
 static const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@";
 
-void build_chain(int chain_length){
-	char* first_pass = random_pass();
-	uint8_t* out = new uint8_t[32];
-	char *base64 = new char[7];
-	int i = 0;
-	printf("%s\t",first_pass);
-	char* str = first_pass;
-	while(i<chain_length){
-		out = hash(out, str);
-		base64 = reduce(base64, out, i);
-		str = base64;
-		i++;
-	}
-	out = hash(out, str);
-	print_hash(out,32);
-	delete[] first_pass;
-	delete[] out;
-	delete[] base64;
-}
 
 char* random_pass(){
 	char* pass = new char[7];
@@ -74,4 +55,117 @@ void print_hash(uint8_t* hash, int length){
 	for( j = 0; j < length; ++j )
 		printf( "%02x", hash[j] );
 	printf("\n");
+}
+
+void fprint_hash(uint8_t* hash, int length){
+	int j;
+	for( j = 0; j < length; ++j )
+		fprintf(stderr, "%02x", hash[j] );
+	fprintf(stderr, "\n");
+}
+
+void build_chain(int chain_length){
+	char* first_pass = random_pass();
+	uint8_t* out = new uint8_t[32];
+	char *base64 = new char[7];
+	int i = 0;
+	printf("%s\t",first_pass);
+	char* str = first_pass;
+	while(i<chain_length-1){
+		out = hash(out, str);
+		// fprintf(stderr, "hash: \n");
+		// fprint_hash(out,32);
+		base64 = reduce(base64, out, i);
+		// fprintf(stderr,"(%d)Reduced: %s\n",i,base64 );
+		str = base64;
+		i++;
+	}
+	out = hash(out, str);
+	print_hash(out,32);
+	delete[] first_pass;
+	delete[] out;
+	delete[] base64;
+}
+
+void findPass(map<string, string> hashMap, string chain_start, string hash1){
+	bool found = false;
+	uint8_t* out = new uint8_t[32];
+	char *base64 = new char[7];
+	strcpy(base64,&chain_start[0]);
+	string hash2(hash1);
+	int i = 0;
+	while(!found){
+		out = hash(out, base64);
+		transform_uint8_t_array_to_string(out,hash2);
+		if(hash1.compare(hash2) == 0){
+			found = true;
+			cout << "Found solution for hash1! Pass: " << base64 << endl;
+			break;
+		}
+		base64 = reduce(base64, out, i);
+		i++;
+	}
+}
+
+void transform_string_to_uint8_t_array(uint8_t* out, string& hash){
+	for (int i = 0; i < hash.size(); i+=2){
+		int result = 0;
+		char c1 = hash[i];
+		char c2 = hash[i+1];
+		result += (isdigit(c1)) ? (c1-'0')*16 : (c1-'a'+10)*16;
+		result += (isdigit(c2)) ? (c2-'0') : (c2-'a'+10);
+		out[i/2] = result;
+		// cout << "Char1: " <<  c1 << " Char2: " << c2 << " Result: " << result << " out[i/2] " << unsigned(out[i/2]) << endl ;
+	}	
+	// return out;
+}
+
+void transform_uint8_t_array_to_string(uint8_t* array, string& hash){
+	for (int i = 0, j = 0; i < 32; i++, j+=2){
+		int num = array[i];
+		int modulo = num%16;
+		int quotient = num/16;
+		hash[j] = (quotient > 9) ? ('a'+quotient-10) : quotient + '0'; 
+		hash[j+1] = (modulo > 9) ? ('a'+modulo-10) : modulo + '0'; 
+	}
+	// return hash;
+}
+
+bool searchHash(map<string, string> hashMap, string hash1){
+	int i = CHAIN_LENGTH-2;
+	bool found = false;
+	string chain_start;
+	string original_hash (hash1);
+	map<string, string>::iterator it;
+	char *base64 = new char[7];
+	uint8_t* out = new uint8_t[32];
+	while(!found && i >= -1){
+		if((it = hashMap.find(hash1)) != hashMap.end()){
+			found = true;
+			chain_start = it->second;
+			findPass(hashMap, chain_start, original_hash);
+			return true;
+		} else {
+			hash1 = original_hash;
+			//Reduce-Hash CHAIN_LENGTH-1-i times
+			transform_string_to_uint8_t_array(out, hash1);
+			for (int j = 0; j < CHAIN_LENGTH-i-1; j++){
+				// printf("To be reduced: ");
+				// print_hash(out,32);
+				base64 = reduce(base64, out, i+j);
+				// printf("(%d)Reduced: %s\n",i+j,base64 );
+				//Hash
+				out = hash(out, base64);
+				// printf("Hashed: ");
+				// print_hash(out,32);
+			}
+			// printf("End for loop\n");
+			transform_uint8_t_array_to_string(out, hash1);
+			// cout << "String: " << hash1 << endl;
+			i--;
+		}
+	}
+	delete[] out;
+	delete[] base64;
+	return false;
 }

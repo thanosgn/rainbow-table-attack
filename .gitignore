@@ -31,3 +31,7 @@ rainbow
 
 # CSV Files
 *.csv
+
+
+# txt Files
+*.txt

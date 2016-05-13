@@ -7,7 +7,6 @@ static const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 int main(int argc, char **argv){
 	srand(getpid());
 	int table_number = atoi(argv[1]);
-	printf("%d\n",table_number );
 	int i;
 	for (i = 0; i < NUM_OF_CHAINS; ++i){
 		build_chain(CHAIN_LENGTH);
