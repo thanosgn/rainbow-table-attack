@@ -19,24 +19,37 @@ void base_64(unsigned char* hash, char* base64){
 	Base64encode(base64, const_hash, 6);
 }
 
+
+uint8_t* hash_function(uint8_t* out, char* str) {
+#define BLOCK256 64
+  // uint8_t* out = new uint8_t[32];
+  blake256_hash(out, (uint8_t*)str, strlen(str));
+  return out;
+}
+
 char* reduce(char *base64, uint8_t* hashed, int round){
-	const unsigned char* data = (const unsigned char*)hashed;
+	// const unsigned char* data = (const unsigned char*)hashed;
 
-	char new_data[50];
-	memset(new_data, '\0', 50);
-	memcpy(new_data, data, 32);
-	int index = 32;
-	while (round > 0){
-		int digit = round%10;
-		new_data[index]=digit;
-		round /= 10;
-		index++;
-	}
+	// char new_data[50];
+	// memset(new_data, '\0', 50);
+	// memcpy(new_data, data, 32);
+	// int index = 32;
+	// while (round > 0){
+	// 	int digit = round%10;
+	// 	new_data[index]=digit;
+	// 	round /= 10;
+	// 	index++;
+	// }
 
-	size_t length = sizeof(new_data);
-	unsigned char hash[SHA_DIGEST_LENGTH];
-	SHA1((const unsigned char*)new_data, length, hash);
-	base_64(hash, base64);
+	// size_t length = sizeof(new_data);
+	// unsigned char hash[SHA_DIGEST_LENGTH];
+	// SHA1((const unsigned char*)new_data, length, hash);
+	char hash[16];
+	MurmurHash3_x64_128(hashed, strlen((char*)hashed), round, hash);
+
+
+
+	base_64((unsigned char*)hash, base64);
 	base64[6]='\0';
 	return base64;
 }
@@ -57,22 +70,23 @@ void print_hash(uint8_t* hash, int length){
 	printf("\n");
 }
 
-void fprint_hash(uint8_t* hash, int length){
+void fprint_hash(uint8_t* hash, int length, FILE* fd){
 	int j;
 	for( j = 0; j < length; ++j )
-		fprintf(stderr, "%02x", hash[j] );
-	fprintf(stderr, "\n");
+		fprintf(fd, "%02x", hash[j] );
+	fprintf(fd, "\n");
 }
 
-void build_chain(int chain_length){
+void build_chain(int chain_length, FILE* fd){
 	char* first_pass = random_pass();
 	uint8_t* out = new uint8_t[32];
 	char *base64 = new char[7];
 	int i = 0;
-	printf("%s\t",first_pass);
+	fprintf(fd, "%s\t",first_pass);
+	// printf("%s\t",first_pass);
 	char* str = first_pass;
 	while(i<chain_length-1){
-		out = hash(out, str);
+		out = hash_function(out, str);
 		// fprintf(stderr, "hash: \n");
 		// fprint_hash(out,32);
 		base64 = reduce(base64, out, i);
@@ -80,22 +94,24 @@ void build_chain(int chain_length){
 		str = base64;
 		i++;
 	}
-	out = hash(out, str);
-	print_hash(out,32);
+	out = hash_function(out, str);
+	fprint_hash(out,32,fd);
+	// print_hash(out,32);
 	delete[] first_pass;
 	delete[] out;
 	delete[] base64;
 }
 
-void findPass(map<string, string> hashMap, string chain_start, string hash1){
+void findPass(unordered_map<string, string> hashMap, string chain_start, string hash1){
 	bool found = false;
 	uint8_t* out = new uint8_t[32];
 	char *base64 = new char[7];
 	strcpy(base64,&chain_start[0]);
 	string hash2(hash1);
 	int i = 0;
-	while(!found){
-		out = hash(out, base64);
+	// printf("Found!\n");
+	while(!found && i < CHAIN_LENGTH){
+		out = hash_function(out, base64);
 		transform_uint8_t_array_to_string(out,hash2);
 		if(hash1.compare(hash2) == 0){
 			found = true;
@@ -131,12 +147,12 @@ void transform_uint8_t_array_to_string(uint8_t* array, string& hash){
 	// return hash;
 }
 
-bool searchHash(map<string, string> hashMap, string hash1){
+bool searchHash(unordered_map<string, string> hashMap, string hash1){
 	int i = CHAIN_LENGTH-2;
 	bool found = false;
 	string chain_start;
 	string original_hash (hash1);
-	map<string, string>::iterator it;
+	unordered_map<string, string>::iterator it;
 	char *base64 = new char[7];
 	uint8_t* out = new uint8_t[32];
 	while(!found && i >= -1){
@@ -146,6 +162,7 @@ bool searchHash(map<string, string> hashMap, string hash1){
 			findPass(hashMap, chain_start, original_hash);
 			return true;
 		} else {
+			// printf("Round: %d\n",i );
 			hash1 = original_hash;
 			//Reduce-Hash CHAIN_LENGTH-1-i times
 			transform_string_to_uint8_t_array(out, hash1);
@@ -155,7 +172,7 @@ bool searchHash(map<string, string> hashMap, string hash1){
 				base64 = reduce(base64, out, i+j);
 				// printf("(%d)Reduced: %s\n",i+j,base64 );
 				//Hash
-				out = hash(out, base64);
+				out = hash_function(out, base64);
 				// printf("Hashed: ");
 				// print_hash(out,32);
 			}

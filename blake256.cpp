@@ -227,12 +227,6 @@ void blake256_test()
 }
 
 
-uint8_t* hash(uint8_t* out, char* str) {
-#define BLOCK256 64
-  // uint8_t* out = new uint8_t[32];
-  blake256_hash(out, (uint8_t*)str, strlen(str));
-  return out;
-}
 
 
 

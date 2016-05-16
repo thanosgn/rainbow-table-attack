@@ -12,7 +12,7 @@ int main (int argc, char* argv[]){
 	ifstream file(rainbow_table);
 	int i;
 	string pass, hash;
-	map<string, string> hashMap;
+	unordered_map<string, string> hashMap;
 	while(!file.eof()){
 		file >> pass;
 		file >> hash;
@@ -24,15 +24,18 @@ int main (int argc, char* argv[]){
 	while(!hash_file.eof()){
 		hash_file >> hash2;
 		cout << "Searching: " << hash2 << " in table " << table_number << endl;
+		searchHash(hashMap, hash2);
 		if(searchHash(hashMap, hash2) == true)
 			break;
 	}
-	// while(std::getline(hash_file, line)){
-	//     stringstream linestream(line);
-	//     string data;
-	//     getline(linestream, data, ':');
-	//     linestream >> hash1;
-	//     cout << hash1;
-	// }
+	// char* out = new char[16];
+	// MurmurHash3_x64_128 ( "lalala", strlen("lalala"), 0, out );
+	// // cout << "out: " << out << endl;
+	// print_hash((uint8_t*)out, 16);
+	// char* base64 = new char[7];
+	// base_64((unsigned char *)out,base64);
+	// base64[6]='\0';
+	// cout << "base64: " << base64;
 	return 0;
 }
+

@@ -2,15 +2,15 @@
 # In order to execute this "Makefile" just type "make"
 #
 
-OBJSBUILD 	= rainbow_table_builder.o blake256.o base64.o rainbow_table.o
-OBJSATTACK 	= rainbow_attack.o rainbow_table.o blake256.o base64.o
-SOURCEBUILD	= rainbow_table_builder.cpp blake256.cpp base64.cpp rainbow_table.cpp
-SOURCEATTACK	= rainbow_attack.cpp rainbow_table.cpp blake256.cpp base64.cpp 
-HEADER  = blake.h rainbow_table.hpp
+OBJSBUILD 	= rainbow_table_builder.o blake256.o base64.o rainbow_table.o MurmurHash3.o
+OBJSATTACK 	= rainbow_attack.o rainbow_table.o blake256.o base64.o MurmurHash3.o
+SOURCEBUILD	= rainbow_table_builder.cpp blake256.cpp base64.cpp rainbow_table.cpp MurmurHash3.cpp
+SOURCEATTACK	= rainbow_attack.cpp rainbow_table.cpp blake256.cpp base64.cpp MurmurHash3.cpp
+HEADER  = blake.h rainbow_table.hpp MurmurHash3.h
 OUTBUILD  	= build_rainbow_table
 OUTATTACK  	= rainbow_attack
 CC		= g++
-FLAGS 	= -c -g -Wno-write-strings -O2
+FLAGS 	= -c -g -O2 -std=c++11
 LFLAGS 	= -L/gmp_install/lib -lgmp -lpthread -lm -lssl -lcrypto
 # -g option enables debugging mode 
 # -c flag generates object code for separate files

@@ -101,4 +101,4 @@ static const uint8_t padding[129] =
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-uint8_t* hash(uint8_t*, char*);
+void blake256_hash(uint8_t *, const uint8_t *, uint64_t );
