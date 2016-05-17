@@ -24,9 +24,9 @@ int main (int argc, char* argv[]){
 	while(!hash_file.eof()){
 		hash_file >> hash2;
 		cout << "Searching: " << hash2 << " in table " << table_number << endl;
-		// searchHash(hashMap, hash2);
-		if(searchHash(hashMap, hash2) == true)
-			return 0;
+		searchHash(hashMap, hash2);
+		// if(searchHash(hashMap, hash2) == true)
+			// return 0;
 	}
 	// for (int i = 0; i < 100; ++i)
 	// {

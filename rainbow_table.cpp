@@ -124,7 +124,7 @@ bool findPass(unordered_map<string, string> hashMap, string chain_start, string 
 		transform_uint8_t_array_to_string(out,hash2);
 		if(hash1.compare(hash2) == 0){
 			found = true;
-			cout << "Found solution for hash1! Pass: " << base64 << endl;
+			cout << "Found solution for " << hash1 << "! Pass: " << base64 << endl;
 			return true;
 		}
 		base64 = reduce(base64, out, i);
@@ -168,8 +168,27 @@ bool searchHash(unordered_map<string, string> hashMap, string hash1){
 	while(!found && i >= -1){
 		if((it = hashMap.find(hash1)) != hashMap.end()){
 			chain_start = it->second;
-			found = findPass(hashMap, chain_start, original_hash);
-			break;
+			if (findPass(hashMap, chain_start, original_hash) == true){
+				return true;
+			} else {
+				hash1 = original_hash;
+				//Reduce-Hash CHAIN_LENGTH-1-i times
+				transform_string_to_uint8_t_array(out, hash1);
+				for (int j = 0; j < CHAIN_LENGTH-i-1; j++){
+					// printf("To be reduced: ");
+					// print_hash(out,32);
+					base64 = reduce(base64, out, i+j);
+					// printf("(%d)Reduced: %s\n",i+j,base64 );
+					//Hash
+					out = hash_function(out, base64);
+					// printf("Hashed: ");
+					// print_hash(out,32);
+				}
+				// printf("End for loop\n");
+				transform_uint8_t_array_to_string(out, hash1);
+				// cout << "String: " << hash1 << endl;
+				i--;
+			}
 		} else {
 			// printf("Round: %d\n",i );
 			hash1 = original_hash;
