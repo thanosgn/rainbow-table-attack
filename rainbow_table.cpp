@@ -44,13 +44,22 @@ char* reduce(char *base64, uint8_t* hashed, int round){
 	// size_t length = sizeof(new_data);
 	// unsigned char hash[SHA_DIGEST_LENGTH];
 	// SHA1((const unsigned char*)new_data, length, hash);
-	char hash[16];
-	MurmurHash3_x64_128(hashed, strlen((char*)hashed), round, hash);
+	
 
+	// printf("Hash: ");
+	// print_hash(hashed,32);
+	
+	uint8_t hash[16];
+	MurmurHash3_x64_128(hashed, 32, round, hash);
+	
+	// printf("(%d)MurMur: \n",round);
+	// print_hash((uint8_t*)hash,16);
 
 
 	base_64((unsigned char*)hash, base64);
+	// printf("Base64: %s\n",base64);
 	base64[6]='\0';
+	// printf("Base64: %s\n",base64);
 	return base64;
 }
 
@@ -83,14 +92,14 @@ void build_chain(int chain_length, FILE* fd){
 	char *base64 = new char[7];
 	int i = 0;
 	fprintf(fd, "%s\t",first_pass);
-	// printf("%s\t",first_pass);
+	// printf("%s\n",first_pass);
 	char* str = first_pass;
 	while(i<chain_length-1){
 		out = hash_function(out, str);
 		// fprintf(stderr, "hash: \n");
 		// fprint_hash(out,32);
 		base64 = reduce(base64, out, i);
-		// fprintf(stderr,"(%d)Reduced: %s\n",i,base64 );
+		// printf("%s\n",base64 );
 		str = base64;
 		i++;
 	}
@@ -102,25 +111,26 @@ void build_chain(int chain_length, FILE* fd){
 	delete[] base64;
 }
 
-void findPass(unordered_map<string, string> hashMap, string chain_start, string hash1){
+bool findPass(unordered_map<string, string> hashMap, string chain_start, string hash1){
 	bool found = false;
 	uint8_t* out = new uint8_t[32];
 	char *base64 = new char[7];
 	strcpy(base64,&chain_start[0]);
 	string hash2(hash1);
 	int i = 0;
-	// printf("Found!\n");
+	// cout << "FindPass for " << hash1 << " Start: " << chain_start << endl;
 	while(!found && i < CHAIN_LENGTH){
 		out = hash_function(out, base64);
 		transform_uint8_t_array_to_string(out,hash2);
 		if(hash1.compare(hash2) == 0){
 			found = true;
 			cout << "Found solution for hash1! Pass: " << base64 << endl;
-			break;
+			return true;
 		}
 		base64 = reduce(base64, out, i);
 		i++;
 	}
+	return false;
 }
 
 void transform_string_to_uint8_t_array(uint8_t* out, string& hash){
@@ -157,10 +167,9 @@ bool searchHash(unordered_map<string, string> hashMap, string hash1){
 	uint8_t* out = new uint8_t[32];
 	while(!found && i >= -1){
 		if((it = hashMap.find(hash1)) != hashMap.end()){
-			found = true;
 			chain_start = it->second;
-			findPass(hashMap, chain_start, original_hash);
-			return true;
+			found = findPass(hashMap, chain_start, original_hash);
+			break;
 		} else {
 			// printf("Round: %d\n",i );
 			hash1 = original_hash;
@@ -184,5 +193,5 @@ bool searchHash(unordered_map<string, string> hashMap, string hash1){
 	}
 	delete[] out;
 	delete[] base64;
-	return false;
+	return found;
 }

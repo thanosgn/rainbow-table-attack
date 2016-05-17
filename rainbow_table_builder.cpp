@@ -5,7 +5,7 @@ static const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 
 
 int main(int argc, char **argv){	
-	srand(getpid());
+	srand(time(NULL)+getpid());
 	int table_number = atoi(argv[1]);
 	int i;
 	char filename[20];

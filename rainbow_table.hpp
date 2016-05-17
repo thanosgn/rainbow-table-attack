@@ -31,7 +31,7 @@ void print_uint8_t(uint8_t*);
 void print_hash(uint8_t*, int);
 void fprint_hash(uint8_t*, int, FILE*);
 bool searchHash(unordered_map<string, string>, string);
-void findPass(unordered_map<string, string>, string, string);
+bool findPass(unordered_map<string, string>, string, string);
 void transform_uint8_t_array_to_string(uint8_t*, string&);
 void transform_string_to_uint8_t_array(uint8_t*, string&);
 uint8_t* hash_function(uint8_t*, char*);

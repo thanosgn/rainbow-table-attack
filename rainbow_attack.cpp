@@ -24,18 +24,21 @@ int main (int argc, char* argv[]){
 	while(!hash_file.eof()){
 		hash_file >> hash2;
 		cout << "Searching: " << hash2 << " in table " << table_number << endl;
-		searchHash(hashMap, hash2);
+		// searchHash(hashMap, hash2);
 		if(searchHash(hashMap, hash2) == true)
-			break;
+			return 0;
 	}
-	// char* out = new char[16];
-	// MurmurHash3_x64_128 ( "lalala", strlen("lalala"), 0, out );
-	// // cout << "out: " << out << endl;
-	// print_hash((uint8_t*)out, 16);
-	// char* base64 = new char[7];
-	// base_64((unsigned char *)out,base64);
-	// base64[6]='\0';
-	// cout << "base64: " << base64;
+	// for (int i = 0; i < 100; ++i)
+	// {
+	// 	char* out = new char[16];
+	// 	MurmurHash3_x64_128 ( "lalala", strlen("lalala"), i, out );
+	// 	// cout << "out: " << out << endl;
+	// 	print_hash((uint8_t*)out, 16);
+	// 	char* base64 = new char[7];
+	// 	base_64((unsigned char *)out,base64);
+	// 	base64[6]='\0';
+	// 	cout << "base64: " << base64 << endl;;
+	// }
 	return 0;
 }
 
