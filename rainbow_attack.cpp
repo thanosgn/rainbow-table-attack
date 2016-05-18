@@ -19,7 +19,10 @@ int main (int argc, char* argv[]){
 		hashMap.insert(pair<string, string>(hash,pass));
 	}
 	char hash_filename[50] = "hashes.txt";
-	string hash1, hash2, line;
+	// string hash2(argv[2]);
+	// cout << "Searching: " << hash2 << " in table " << table_number << endl;
+	// searchHash(hashMap, hash2);
+	string hash2, line;
 	ifstream hash_file(hash_filename);
 	while(!hash_file.eof()){
 		hash_file >> hash2;

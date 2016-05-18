@@ -15,51 +15,21 @@ char* random_pass(){
 
 
 void base_64(unsigned char* hash, char* base64){
-	const char* const_hash = reinterpret_cast<const char *>( hash);
+	const char* const_hash = reinterpret_cast<const char *>(hash);
 	Base64encode(base64, const_hash, 6);
 }
 
 
-uint8_t* hash_function(uint8_t* out, char* str) {
-#define BLOCK256 64
-  // uint8_t* out = new uint8_t[32];
-  blake256_hash(out, (uint8_t*)str, strlen(str));
-  return out;
+inline uint8_t* hash_function(uint8_t* out, char* str) {
+	blake256_hash(out, (uint8_t*)str, strlen(str));
+	return out;
 }
 
-char* reduce(char *base64, uint8_t* hashed, int round){
-	// const unsigned char* data = (const unsigned char*)hashed;
-
-	// char new_data[50];
-	// memset(new_data, '\0', 50);
-	// memcpy(new_data, data, 32);
-	// int index = 32;
-	// while (round > 0){
-	// 	int digit = round%10;
-	// 	new_data[index]=digit;
-	// 	round /= 10;
-	// 	index++;
-	// }
-
-	// size_t length = sizeof(new_data);
-	// unsigned char hash[SHA_DIGEST_LENGTH];
-	// SHA1((const unsigned char*)new_data, length, hash);
-	
-
-	// printf("Hash: ");
-	// print_hash(hashed,32);
-	
-	uint8_t hash[16];
-	MurmurHash3_x64_128(hashed, 32, round, hash);
-	
-	// printf("(%d)MurMur: \n",round);
-	// print_hash((uint8_t*)hash,16);
-
-
-	base_64((unsigned char*)hash, base64);
-	// printf("Base64: %s\n",base64);
+inline char* reduce(char *base64, uint8_t* hashed, int round){
+	uint8_t murmur_hash[16];
+	MurmurHash3_x64_128(hashed, 32, round, murmur_hash);
+	base_64((unsigned char*)murmur_hash, base64);
 	base64[6]='\0';
-	// printf("Base64: %s\n",base64);
 	return base64;
 }
 
