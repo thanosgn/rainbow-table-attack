@@ -24,12 +24,9 @@ int main (int argc, char* argv[]){
 	// cout << "Searching: " << hash2 << " in table " << table_number << endl;
 	// searchHash(hashMap, hash2);
 	char str[65];
-	int ch;
 	while(true){
 		if((cin.getline(str,65))){
-			 // cout << (char)ch;
 			string hash2(str);
-			cout << "Searching: " << hash2 << " in table " << table_number << endl;
 			searchHash(hashMap, hash2);
 		} else {
 			usleep(500000);
