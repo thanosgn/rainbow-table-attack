@@ -85,10 +85,8 @@ bool findPassInChain(unordered_map<string, string> hashMap, string chain_start, 
 	string hash2(hash1);
 	uint8_t murmur_hash[16];
 	int i = 0;
-	// cout << "FindPass for " << hash1 << " Start: " << chain_start << endl;
 	while(!found && i < CHAIN_LENGTH){
 		blake256_hash(out, (uint8_t*)base64, 6);
-		// out = hash_function(out, base64);
 		transform_uint8_t_array_to_string(out,hash2);
 		if(hash1.compare(hash2) == 0){
 			found = true;
@@ -96,9 +94,6 @@ bool findPassInChain(unordered_map<string, string> hashMap, string chain_start, 
 			return true;
 		}
 		base64 = reduce(base64, out, i);
-		// MurmurHash3_x64_128(out, 32, i, murmur_hash);
-		// base_64((unsigned char*)murmur_hash, base64);
-		// base64[6]='\0';
 		i++;
 	}
 	return false;
@@ -112,9 +107,7 @@ void transform_string_to_uint8_t_array(uint8_t* out, string& hash){
 		result += (isdigit(c1)) ? (c1-'0')*16 : (c1-'a'+10)*16;
 		result += (isdigit(c2)) ? (c2-'0') : (c2-'a'+10);
 		out[i/2] = result;
-		// cout << "Char1: " <<  c1 << " Char2: " << c2 << " Result: " << result << " out[i/2] " << unsigned(out[i/2]) << endl ;
 	}	
-	// return out;
 }
 
 void transform_uint8_t_array_to_string(uint8_t* array, string& hash){
@@ -125,7 +118,6 @@ void transform_uint8_t_array_to_string(uint8_t* array, string& hash){
 		hash[j] = (quotient > 9) ? ('a'+quotient-10) : quotient + '0'; 
 		hash[j+1] = (modulo > 9) ? ('a'+modulo-10) : modulo + '0'; 
 	}
-	// return hash;
 }
 
 bool searchHash(unordered_map<string, string> hashMap, string hash1){
