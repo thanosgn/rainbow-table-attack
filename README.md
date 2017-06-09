@@ -1,4 +1,4 @@
-# A SHA-3 finalist hash reversal using rainbow tables.
+# A SHA-3 finalist hash (BLAKE) reversal using rainbow tables.
 
 This repo is my solution to a university project in wich I was supposed to reverse a SHA-3 finalist hash function, in order to retrieve a hashed 6-character password.
 
